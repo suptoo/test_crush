@@ -1,0 +1,122 @@
+✅ SETUP CHECKLIST - BACB Fieldwork Tracker
+===========================================
+
+Complete these tasks in order:
+
+☐ STEP 1: Supabase Database Setup
+   ☐ Open Supabase dashboard
+   ☐ Navigate to SQL Editor
+   ☐ Run supabase_schema.sql
+   ☐ Verify "fieldwork_hours" table created
+   ☐ Check Table Editor to confirm structure
+   
+☐ STEP 2: Verify Authentication Settings
+   ☐ Go to Authentication → Settings
+   ☐ Confirm Email Auth is enabled
+   ☐ (Optional) Configure email templates
+   
+☐ STEP 3: Start Local Server
+   ☐ Open PowerShell/Terminal in project folder
+   ☐ Run: python -m http.server 8000
+   ☐ Keep terminal window open
+   
+☐ STEP 4: Access Application
+   ☐ Open browser
+   ☐ Go to: http://localhost:8000/login.html
+   ☐ Verify page loads correctly
+   
+☐ STEP 5: Create Account
+   ☐ Click "Sign Up" tab
+   ☐ Enter full name
+   ☐ Enter email address
+   ☐ Enter password (min 6 characters)
+   ☐ Click "Sign Up" button
+   ☐ Verify redirect to dashboard
+   
+☐ STEP 6: Test Dashboard
+   ☐ Check all statistics cards load
+   ☐ Verify month selector works
+   ☐ Confirm calendar displays correctly
+   ☐ Test Previous/Next month buttons
+   
+☐ STEP 7: Add Test Entry
+   ☐ Click "➕ Add New Entry" button
+   ☐ Fill in all required fields:
+      ☐ Date
+      ☐ Time
+      ☐ Unrestricted hours
+      ☐ Restricted hours
+      ☐ Supervision hours
+      ☐ Descriptions
+   ☐ Click "Save Entry"
+   ☐ Verify entry appears in chart
+   ☐ Verify entry appears in calendar
+   ☐ Check statistics update correctly
+   
+☐ STEP 8: Test Day Details
+   ☐ Click on day with data in calendar
+   ☐ Verify modal opens
+   ☐ Check all information displays
+   ☐ Close modal
+   ☐ Try clicking bar in chart
+   ☐ Verify same modal opens
+   
+☐ STEP 9: Test Month Navigation
+   ☐ Select different month from dropdown
+   ☐ Verify calendar updates
+   ☐ Verify statistics reset
+   ☐ Add entry to new month
+   ☐ Navigate back to previous month
+   ☐ Verify original entry still there
+   
+☐ STEP 10: Test Logout/Login
+   ☐ Click "Logout" button
+   ☐ Verify redirect to login page
+   ☐ Login with your credentials
+   ☐ Verify data is still there
+   ☐ Check entries persist
+
+===================================
+🎉 ALL DONE! YOU'RE READY TO USE!
+===================================
+
+TROUBLESHOOTING:
+----------------
+❌ If any step fails:
+   1. Check browser console (F12)
+   2. Review error messages
+   3. Re-read setup instructions
+   4. Verify Supabase credentials
+   5. Ensure database schema ran successfully
+
+COMMON ISSUES:
+--------------
+• Data shows 0 → Didn't run SQL schema
+• Can't login → Check email/password
+• Can't add entry → Database not setup
+• Page won't load → Server not running
+
+NEXT STEPS:
+-----------
+✓ Start adding your real fieldwork entries
+✓ Track progress month-by-month
+✓ Monitor BACB compliance automatically
+✓ Review data regularly
+
+📝 REMINDER:
+------------
+• DO NOT enter client names or PHI
+• Backup data regularly
+• Track hours daily for accuracy
+• Review supervision percentage weekly
+• Maximum 130 hours per month
+• Minimum 5% supervision required
+
+SUPPORT:
+--------
+• Read full README.md for details
+• Check QUICKSTART.txt for fast reference
+• Review Supabase documentation
+• Check browser console for errors
+
+Good luck with your BACB journey! 🚀

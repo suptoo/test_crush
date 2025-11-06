@@ -1,0 +1,192 @@
+📤 DOCUMENT UPLOAD FEATURE - QUICK GUIDE
+=========================================
+
+🎉 NEW FEATURE: Upload Your Fieldwork Documents!
+=================================================
+
+Now you can upload your existing fieldwork documents and automatically
+extract all the data into the tracker. No more manual entry!
+
+📄 SUPPORTED FILE FORMATS:
+==========================
+
+✓ Word Documents (.docx)
+✓ Excel Spreadsheets (.xlsx, .xls)
+✓ CSV Files (.csv)
+✓ Text Files (.txt)
+
+🚀 HOW TO USE:
+==============
+
+STEP 1: Prepare Your Document
+------------------------------
+Make sure your document contains:
+- Dates (any format: 10/15/2025, 2025-10-15, October 15, 2025)
+- Hours information labeled as:
+  * "Unrestricted" or "Direct" or "Client Contact"
+  * "Restricted" or "Indirect" or "Planning"
+  * "Supervision" or "Supervised"
+- Optional: Time ranges (9:00 AM - 5:00 PM)
+- Optional: Activity descriptions
+
+STEP 2: Upload Document
+------------------------
+1. Click "📤 Upload Document" button (pink button in header)
+2. Select your file from computer
+3. Wait for processing (usually takes 2-10 seconds)
+4. Review extracted data preview
+
+STEP 3: Review Preview
+----------------------
+The system will show you:
+- Total entries found
+- Total hours (Unrestricted, Restricted, Supervision)
+- Table with all extracted entries
+- Date, hours breakdown for each entry
+
+STEP 4: Import Data
+-------------------
+1. Review the extracted data
+2. Click "✓ Import All Entries" button
+3. System will:
+   - Import all entries to your account
+   - Skip entries that already exist (duplicates)
+   - Show summary of import results
+4. View your data in the dashboard!
+
+📊 EXAMPLE DOCUMENT FORMATS:
+============================
+
+WORD DOCUMENT EXAMPLE:
+----------------------
+October 15, 2025
+Time: 9:00 AM - 5:00 PM
+Unrestricted: 4.5 hours
+Restricted: 2.0 hours
+Supervision: 1.5 hours
+Activities: Client sessions, behavior plans, supervision meeting
+
+October 16, 2025
+Time: 10:00 AM - 3:00 PM
+Unrestricted: 3.0 hours
+Restricted: 1.5 hours
+Supervision: 0.5 hours
+
+EXCEL/CSV EXAMPLE:
+------------------
+Date         | Unrestricted | Restricted | Supervision | Time
+10/15/2025   | 4.5         | 2.0        | 1.5         | 9:00 AM - 5:00 PM
+10/16/2025   | 3.0         | 1.5        | 0.5         | 10:00 AM - 3:00 PM
+10/17/2025   | 5.0         | 1.0        | 1.0         | 8:00 AM - 3:00 PM
+
+TEXT FILE EXAMPLE:
+------------------
+Date: 10/15/2025
+Unrestricted: 4.5
+Restricted: 2.0
+Supervision: 1.5
+
+Date: 10/16/2025
+Unrestricted: 3.0
+Restricted: 1.5
+Supervision: 0.5
+
+🎯 SMART FEATURES:
+==================
+
+✓ Automatic Date Detection
+   - Recognizes multiple date formats
+   - US format: MM/DD/YYYY
+   - European format: DD/MM/YYYY
+   - ISO format: YYYY-MM-DD
+   - Text format: October 15, 2025
+
+✓ Flexible Keywords
+   - "Unrestricted" = "Direct" = "Client Contact"
+   - "Restricted" = "Indirect" = "Planning"
+   - "Supervision" = "Supervised" = "Supervisor"
+
+✓ Duplicate Prevention
+   - Won't import entries that already exist
+   - Shows count of skipped duplicates
+   - Safe to upload same document multiple times
+
+✓ Error Handling
+   - Shows clear error messages
+   - Continues importing valid entries even if some fail
+   - Provides detailed import summary
+
+💡 TIPS FOR BEST RESULTS:
+=========================
+
+✓ Use consistent date format throughout document
+✓ Label hours clearly (Unrestricted, Restricted, Supervision)
+✓ Keep hours as numbers (not text like "two hours")
+✓ One entry per date
+✓ Include time ranges if available
+✓ Add descriptions for better tracking
+
+⚠️ COMMON ISSUES & SOLUTIONS:
+==============================
+
+ISSUE: No entries extracted
+SOLUTION: Make sure dates and hours are clearly labeled
+
+ISSUE: Wrong dates detected
+SOLUTION: Use standard date formats (MM/DD/YYYY recommended)
+
+ISSUE: Hours not detected
+SOLUTION: Use keywords like "Unrestricted", "Restricted", "Supervision"
+
+ISSUE: All entries skipped
+SOLUTION: Those dates already exist in your account
+
+ISSUE: Upload fails
+SOLUTION: Check file format is supported (.docx, .xlsx, .csv, .txt)
+
+📋 STEP-BY-STEP EXAMPLE:
+========================
+
+1. You have a Word document with October hours
+2. Click "📤 Upload Document"
+3. Select your .docx file
+4. System processes and shows:
+   "✓ Successfully extracted 23 entries from October_Hours.docx"
+5. Preview shows:
+   - 23 Total Entries
+   - 90.0 Total Hours
+   - 60.0 Unrestricted
+   - 20.0 Restricted
+   - 10.0 Supervision
+6. Table shows all 23 days with breakdown
+7. Click "✓ Import All Entries"
+8. System imports all 23 entries
+9. Shows: "Import completed! ✓ Successfully imported: 23 entries"
+10. Dashboard now shows all your data with charts and calendar!
+
+🎉 BENEFITS:
+============
+
+✓ Save Time - No manual entry needed
+✓ Accurate - Direct extraction from your documents
+✓ Fast - Process months of data in seconds
+✓ Safe - Duplicate prevention, error handling
+✓ Flexible - Multiple file formats supported
+✓ Visual - See all your data immediately
+✓ Cloud - Data stored securely in Supabase
+
+📞 SUPPORT:
+===========
+
+If you have issues:
+1. Check your document format matches examples above
+2. Try different file format (Word to CSV, etc.)
+3. Check browser console (F12) for errors
+4. Ensure dates and hours are clearly labeled
+
+Happy tracking! 🚀
+
+---
+Upload feature works with ANY document containing
+dates and hours information. Try it now!
+---

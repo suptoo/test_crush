@@ -245,9 +245,20 @@
         // Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
+
+            // Validation
+            if (!email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
 
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> Logging in...';
@@ -255,18 +266,26 @@
 
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
+                    email: email,
+                    password: password
                 });
 
-                if (error) throw error;
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        throw new Error('Invalid email or password. Please try again.');
+                    } else if (error.message.includes('Email not confirmed')) {
+                        throw new Error('Please verify your email before logging in.');
+                    }
+                    throw error;
+                }
 
-                showMessage('Login successful! Redirecting...', 'success');
+                showMessage('✓ Login successful! Redirecting...', 'success');
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
             } catch (error) {
-                showMessage(error.message, 'error');
+                console.error('Login error:', error);
+                showMessage(error.message || 'Login failed. Please try again.', 'error');
                 btn.disabled = false;
                 btn.innerHTML = 'Login';
             }
@@ -275,11 +294,27 @@
         // Signup
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             const btn = document.getElementById('signupBtn');
+
+            // Validation
+            if (!name || !email || !password || !confirmPassword) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters long', 'error');
+                return;
+            }
 
             if (password !== confirmPassword) {
                 showMessage('Passwords do not match!', 'error');
@@ -292,27 +327,57 @@
 
             try {
                 const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
+                    email: email,
+                    password: password,
                     options: {
                         data: {
                             full_name: name
-                        }
+                        },
+                        emailRedirectTo: window.location.origin + '/dashboard.html'
                     }
                 });
 
-                if (error) throw error;
+                if (error) {
+                    if (error.message.includes('already registered')) {
+                        throw new Error('This email is already registered. Please login instead.');
+                    }
+                    throw error;
+                }
 
-                showMessage('Account created! Please check your email to verify. Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 2000);
+                if (data.user && data.session) {
+                    // User is automatically logged in (email confirmation disabled)
+                    showMessage('✓ Account created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    // Email confirmation required
+                    showMessage('✓ Account created! Please check your email to verify your account.', 'success');
+                    setTimeout(() => {
+                        isSignupMode = false;
+                        loginForm.style.display = 'flex';
+                        signupForm.style.display = 'none';
+                        toggleText.innerHTML = "Don't have an account? <a id='toggleLink'>Sign up</a>";
+                        document.getElementById('toggleLink').addEventListener('click', () => {
+                            location.reload();
+                        });
+                        btn.disabled = false;
+                        btn.innerHTML = 'Sign Up';
+                    }, 3000);
+                }
             } catch (error) {
-                showMessage(error.message, 'error');
+                console.error('Signup error:', error);
+                showMessage(error.message || 'Signup failed. Please try again.', 'error');
                 btn.disabled = false;
                 btn.innerHTML = 'Sign Up';
             }
         });
+
+        // Email validation helper
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
 
         function showMessage(message, type) {
             const className = type === 'success' ? 'success-message' : 'error-message';
