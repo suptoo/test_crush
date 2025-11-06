@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACB Tracker - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-color);
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .auth-header h1 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .auth-btn {
+            padding: 15px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+
+        .auth-toggle a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #f87171;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #4ade80;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h1>📊 BACB Tracker</h1>
+                <p style="color: var(--text-secondary);">Track your fieldwork hours securely in the cloud</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="auth-btn" id="loginBtn">
+                    Login
+                </button>
+            </form>
+
+            <!-- Signup Form (Hidden by default) -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required placeholder="••••••••" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" required placeholder="••••••••" minlength="6">
+                </div>
+                <button type="submit" class="auth-btn" id="signupBtn">
+                    Sign Up
+                </button>
+            </form>
+
+            <div class="auth-toggle">
+                <p id="toggleText">
+                    Don't have an account? <a id="toggleLink">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://pydjyurvukyhfyojrhpu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5ZGp5dXJ2dWt5aGZ5b2pyaHB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MDY3MjgsImV4cCI6MjA2OTQ4MjcyOH0.apfIlOx8hptjKDyMti5TT0hc1wpCnUrnRhHM5zAUkpU';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let isSignupMode = false;
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const toggleLink = document.getElementById('toggleLink');
+        const toggleText = document.getElementById('toggleText');
+        const messageContainer = document.getElementById('messageContainer');
+
+        // Check if user is already logged in
+        checkUser();
+
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Toggle between login and signup
+        toggleLink.addEventListener('click', () => {
+            isSignupMode = !isSignupMode;
+            if (isSignupMode) {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'flex';
+                toggleText.innerHTML = 'Already have an account? <a id="toggleLink">Login</a>';
+            } else {
+                loginForm.style.display = 'flex';
+                signupForm.style.display = 'none';
+                toggleText.innerHTML = "Don't have an account? <a id='toggleLink'>Sign up</a>";
+            }
+            messageContainer.innerHTML = '';
+            // Re-attach event listener
+            document.getElementById('toggleLink').addEventListener('click', arguments.callee);
+        });
+
+        // Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Logging in...';
+            messageContainer.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                showMessage('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } catch (error) {
+                showMessage(error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Login';
+            }
+        });
+
+        // Signup
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match!', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Creating account...';
+            messageContainer.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: name
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                showMessage('Account created! Please check your email to verify. Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            } catch (error) {
+                showMessage(error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Sign Up';
+            }
+        });
+
+        function showMessage(message, type) {
+            const className = type === 'success' ? 'success-message' : 'error-message';
+            messageContainer.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

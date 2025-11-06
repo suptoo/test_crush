@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACB Fieldwork Tracker - Interactive Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Date picker library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- D3.js for advanced visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📊 BACB-Compliant Fieldwork Tracking Dashboard</h1>
+            <p class="subtitle">Track Unrestricted, Restricted & Supervision Hours - October 2024</p>
+        </header>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <h2>🎛️ Control Panel</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="dateRange">📅 Select Date Range:</label>
+                    <input type="text" id="dateRange" placeholder="Select dates">
+                </div>
+                
+                <div class="control-group">
+                    <label for="dataFilter">🔍 Filter Data:</label>
+                    <select id="dataFilter">
+                        <option value="all">All Data</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+
+                <button id="refreshData" class="btn-primary">🔄 Refresh Data</button>
+                <button id="exportData" class="btn-secondary">💾 Export Data</button>
+                <button id="uploadData" class="btn-secondary">📤 Upload Data</button>
+                <button onclick="window.location.href='compliance.html'" class="btn-primary">📋 BACB Forms & Compliance</button>
+                <input type="file" id="fileInput" accept=".csv,.json" style="display: none;">
+            </div>
+        </section>
+
+        <!-- October Summary -->
+        <section class="stats-section">
+            <div class="stat-card" id="totalHours" style="grid-column: span 2;">
+                <div class="stat-icon" style="font-size: 4em;">⏱️</div>
+                <div class="stat-content">
+                    <h3>OCTOBER 2024 TOTAL</h3>
+                    <p class="stat-value" style="font-size: 3.5em;">0</p>
+                    <span class="stat-change">HOURS</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="unrestrictedCard">
+                <div class="stat-icon">�</div>
+                <div class="stat-content">
+                    <h3>Unrestricted</h3>
+                    <p class="stat-value">0</p>
+                    <span class="stat-change">hours</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="restrictedCard">
+                <div class="stat-icon">�</div>
+                <div class="stat-content">
+                    <h3>Restricted</h3>
+                    <p class="stat-value">0</p>
+                    <span class="stat-change">hours</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="supervisionCard">
+                <div class="stat-icon">👨‍🏫</div>
+                <div class="stat-content">
+                    <h3>Supervision</h3>
+                    <p class="stat-value">0</p>
+                    <span class="stat-change">hours</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="workingDays">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <h3>Working Days</h3>
+                    <p class="stat-value">0</p>
+                    <span class="stat-change">days</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Visualization Area -->
+        <section class="visualization-grid">
+            <!-- Main Chart -->
+            <div class="chart-container full-width" id="mainChartContainer">
+                <div class="chart-header">
+                    <h3>📊 October 2024 - Daily Hours Breakdown</h3>
+                </div>
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="chart-container full-width" id="calendarContainer">
+                <div class="chart-header">
+                    <h3>📆 October 2024 Calendar - Click Any Day for Details</h3>
+                </div>
+                <div id="calendarView"></div>
+            </div>
+
+            <!-- Day Details Modal (Hidden by default) -->
+            <div id="dayDetailsModal" style="display: none;">
+                <div id="dayDetailsContent"></div>
+            </div>
+        </section>
+
+        <!-- Data Input Section -->
+        <section class="data-input-section">
+            <h2>➕ Add New Fieldwork Entry</h2>
+            <div class="input-form">
+                <div class="form-group">
+                    <label for="entryDate">Date:</label>
+                    <input type="date" id="entryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="entryTime">Time Range:</label>
+                    <input type="text" id="entryTime" placeholder="10:00 AM - 12:30 PM">
+                </div>
+                <div class="form-group">
+                    <label for="entryUnrestricted">Unrestricted Hours:</label>
+                    <input type="number" id="entryUnrestricted" step="0.5" min="0" placeholder="2.5">
+                </div>
+                <div class="form-group">
+                    <label for="entryRestricted">Restricted Hours:</label>
+                    <input type="number" id="entryRestricted" step="0.5" min="0" placeholder="1.0">
+                </div>
+                <div class="form-group">
+                    <label for="entrySupervision">Supervision Hours:</label>
+                    <input type="number" id="entrySupervision" step="0.5" min="0" placeholder="1.0">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="entryUnrestrictedDesc">Unrestricted Activity Description:</label>
+                    <input type="text" id="entryUnrestrictedDesc" placeholder="Describe unrestricted activity...">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="entryRestrictedDesc">Restricted Activity Description:</label>
+                    <input type="text" id="entryRestrictedDesc" placeholder="Describe restricted activity...">
+                </div>
+                <button id="addEntry" class="btn-primary" style="grid-column: span 2;">Add Entry</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with ❤️ | Last Updated: <span id="lastUpdate">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

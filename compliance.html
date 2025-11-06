@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACB Compliance Report & Forms</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .compliance-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .report-section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .requirement-card {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .requirement-card.met {
+            border-left-color: var(--success-color);
+        }
+        
+        .requirement-card.warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .requirement-card.not-met {
+            border-left-color: var(--danger-color);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--bg-color);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .form-template {
+            background: white;
+            color: #000;
+            padding: 40px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .form-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-field {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dotted #666;
+            padding: 8px 0;
+        }
+        
+        .signature-section {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .signature-line {
+            border-top: 2px solid #000;
+            padding-top: 10px;
+            margin-top: 50px;
+        }
+        
+        .monthly-log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            color: #000;
+        }
+        
+        .monthly-log-table th,
+        .monthly-log-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .monthly-log-table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .form-template {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="compliance-container">
+        <header class="header">
+            <h1>📋 BACB Compliance Report & Forms</h1>
+            <p class="subtitle">Experience Verification & Monthly Logs</p>
+            <button onclick="window.location.href='index.html'" class="btn-secondary no-print" style="margin-top: 15px;">← Back to Dashboard</button>
+        </header>
+
+        <!-- BACB Requirements Overview -->
+        <section class="report-section">
+            <h2>📊 BACB Requirements Status</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Tracking compliance with BACB standards for supervised fieldwork hours
+            </p>
+            
+            <div class="requirements-grid">
+                <div class="requirement-card met" id="totalHoursCard">
+                    <h3>✓ Total Fieldwork Hours</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="totalProgress" style="width: 0%">0%</div>
+                    </div>
+                    <p><strong id="totalHoursText">0</strong> / 2000 hours required</p>
+                    <small>Complete 2000 hours of supervised fieldwork</small>
+                </div>
+                
+                <div class="requirement-card" id="supervisionCard">
+                    <h3>👨‍🏫 Supervision Percentage</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="supervisionProgress" style="width: 0%">0%</div>
+                    </div>
+                    <p><strong id="supervisionPercent">0%</strong> of total hours</p>
+                    <small>Minimum 5% supervision required (100 hours)</small>
+                </div>
+                
+                <div class="requirement-card" id="monthlyMaxCard">
+                    <h3>📅 Monthly Maximum</h3>
+                    <p><strong id="currentMonthHours">0</strong> hours this month</p>
+                    <p style="font-size: 0.9em; color: var(--text-secondary);">October 2024</p>
+                    <small>Maximum 130 hours per month allowed</small>
+                </div>
+                
+                <div class="requirement-card" id="unrestrictedCard">
+                    <h3>🟢 Unrestricted Hours</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="unrestrictedProgress" style="width: 0%; background: rgba(74, 222, 128, 0.8);">0%</div>
+                    </div>
+                    <p><strong id="unrestrictedHours">0</strong> hours</p>
+                    <small>Direct client interaction hours</small>
+                </div>
+                
+                <div class="requirement-card" id="restrictedCard">
+                    <h3>🟡 Restricted Hours</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="restrictedProgress" style="width: 0%; background: rgba(251, 191, 36, 0.8);">0%</div>
+                    </div>
+                    <p><strong id="restrictedHours">0</strong> hours</p>
+                    <small>Maximum 40% of unrestricted hours (max 800)</small>
+                </div>
+                
+                <div class="requirement-card" id="durationCard">
+                    <h3>⏱️ Duration Requirement</h3>
+                    <p><strong id="monthsCompleted">1</strong> months completed</p>
+                    <p style="font-size: 0.9em; color: var(--text-secondary);">Started: October 2024</p>
+                    <small>Minimum 12-24 months required</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monthly Verification Form -->
+        <section class="report-section">
+            <h2>📝 Monthly Experience Verification Form</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Pre-filled form for supervisor review and signature
+            </p>
+            
+            <div class="export-buttons no-print">
+                <button onclick="printForm('monthly-form')" class="btn-primary">🖨️ Print Monthly Form</button>
+                <button onclick="downloadPDF('monthly-form')" class="btn-secondary">📄 Download PDF</button>
+                <button onclick="copyFormData()" class="btn-secondary">📋 Copy Data</button>
+            </div>
+            
+            <div id="monthly-form" class="form-template">
+                <div class="form-header">
+                    <h2>BEHAVIOR ANALYST CERTIFICATION BOARD</h2>
+                    <h3>Monthly Fieldwork Verification Form</h3>
+                    <p style="margin-top: 15px; font-size: 0.95em;">October 2024</p>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 15px;">Supervisee Information</h3>
+                    <div class="form-field">
+                        <span><strong>Name:</strong></span>
+                        <span style="flex: 1; text-align: right;">K. Previl</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Period:</strong></span>
+                        <span style="flex: 1; text-align: right;">October 1-31, 2024</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Setting:</strong></span>
+                        <span style="flex: 1; text-align: right;">School-Based ABA Services</span>
+                    </div>
+                </div>
+                
+                <table class="monthly-log-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Unrestricted</th>
+                            <th>Restricted</th>
+                            <th>Supervision</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyTableBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f9f9f9; font-weight: bold;">
+                            <td colspan="3">MONTHLY TOTALS:</td>
+                            <td id="monthlyUnrestricted">0.0</td>
+                            <td id="monthlyRestricted">0.0</td>
+                            <td id="monthlySupervision">0.0</td>
+                            <td id="monthlyTotal">0.0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 15px;">Supervision Summary</h3>
+                    <div class="form-field">
+                        <span><strong>Total Supervision Hours:</strong></span>
+                        <span id="formSupervisionHours">0.0</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Supervision Percentage:</strong></span>
+                        <span id="formSupervisionPercent">0%</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Meets 5% Minimum:</strong></span>
+                        <span id="formMeetsRequirement">No</span>
+                    </div>
+                </div>
+                
+                <div class="signature-section">
+                    <div>
+                        <h4>Supervisee Attestation</h4>
+                        <p style="font-size: 0.9em; margin: 10px 0;">
+                            I certify that the above hours are accurate and were completed under appropriate supervision.
+                        </p>
+                        <div class="signature-line">
+                            <div>Supervisee Signature: _________________________</div>
+                            <div style="margin-top: 10px;">Date: _________________________</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4>Supervisor Verification</h4>
+                        <p style="font-size: 0.9em; margin: 10px 0;">
+                            I verify the accuracy of these hours and confirm appropriate supervision was provided.
+                        </p>
+                        <div class="signature-line">
+                            <div>Supervisor Signature: _________________________</div>
+                            <div style="margin-top: 10px;">Date: _________________________</div>
+                            <div style="margin-top: 10px;">BACB Cert #: _________________________</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Experience Form -->
+        <section class="report-section">
+            <h2>🎓 Final Experience Verification Form</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Cumulative summary for BACB submission
+            </p>
+            
+            <div class="export-buttons no-print">
+                <button onclick="printForm('final-form')" class="btn-primary">🖨️ Print Final Form</button>
+                <button onclick="downloadPDF('final-form')" class="btn-secondary">📄 Download PDF</button>
+            </div>
+            
+            <div id="final-form" class="form-template">
+                <div class="form-header">
+                    <h2>BEHAVIOR ANALYST CERTIFICATION BOARD</h2>
+                    <h3>Experience Verification Form - Cumulative Summary</h3>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 15px;">Supervisee Information</h3>
+                    <div class="form-field">
+                        <span><strong>Name:</strong></span>
+                        <span>K. Previl</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Experience Period:</strong></span>
+                        <span>October 2024 - Present</span>
+                    </div>
+                    <div class="form-field">
+                        <span><strong>Total Duration:</strong></span>
+                        <span id="finalDuration">1 month</span>
+                    </div>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 15px;">Cumulative Hours Summary</h3>
+                    <table class="monthly-log-table">
+                        <tr>
+                            <th>Category</th>
+                            <th>Hours Completed</th>
+                            <th>Percentage</th>
+                        </tr>
+                        <tr>
+                            <td>Unrestricted Hours</td>
+                            <td id="finalUnrestricted">0.0</td>
+                            <td id="finalUnrestrictedPercent">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Restricted Hours</td>
+                            <td id="finalRestricted">0.0</td>
+                            <td id="finalRestrictedPercent">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Supervision Hours</td>
+                            <td id="finalSupervision">0.0</td>
+                            <td id="finalSupervisionPercent">0%</td>
+                        </tr>
+                        <tr style="background: #f9f9f9; font-weight: bold;">
+                            <td>TOTAL HOURS</td>
+                            <td id="finalTotal">0.0</td>
+                            <td>100%</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <h3 style="margin-bottom: 15px;">BACB Requirements Met</h3>
+                    <div class="form-field">
+                        <span>✓ Minimum 2000 hours</span>
+                        <span id="final2000Hours">Pending</span>
+                    </div>
+                    <div class="form-field">
+                        <span>✓ Minimum 5% supervision (100 hours)</span>
+                        <span id="final5Percent">Pending</span>
+                    </div>
+                    <div class="form-field">
+                        <span>✓ Duration 12-24 months</span>
+                        <span id="finalDurationReq">Pending</span>
+                    </div>
+                    <div class="form-field">
+                        <span>✓ Restricted hours ≤ 40% unrestricted (max 800)</span>
+                        <span id="finalRestrictedReq">Pending</span>
+                    </div>
+                </div>
+                
+                <div class="signature-section">
+                    <div>
+                        <h4>Supervisee Attestation</h4>
+                        <p style="font-size: 0.9em; margin: 10px 0;">
+                            I certify that all reported hours are accurate and completed under appropriate BACB supervision.
+                        </p>
+                        <div class="signature-line">
+                            <div>Supervisee Signature: _________________________</div>
+                            <div style="margin-top: 10px;">Date: _________________________</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4>Supervisor Final Verification</h4>
+                        <p style="font-size: 0.9em; margin: 10px 0;">
+                            I verify all hours and confirm the supervisee meets BACB requirements.
+                        </p>
+                        <div class="signature-line">
+                            <div>Supervisor Signature: _________________________</div>
+                            <div style="margin-top: 10px;">Date: _________________________</div>
+                            <div style="margin-top: 10px;">BACB Cert #: _________________________</div>
+                            <div style="margin-top: 10px;">Supervisor Name (Print): _________________________</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources -->
+        <section class="report-section no-print">
+            <h2>📚 BACB Resources & Guidelines</h2>
+            <div style="margin-top: 20px;">
+                <h3>Key BACB Requirements:</h3>
+                <ul style="line-height: 2; margin-left: 20px; color: var(--text-secondary);">
+                    <li>✓ Total: 2000 hours of supervised experience</li>
+                    <li>✓ Duration: 12-24 months minimum</li>
+                    <li>✓ Supervision: Minimum 5% of total hours (100 hours)</li>
+                    <li>✓ Monthly Maximum: 130 hours per month</li>
+                    <li>✓ Restricted Hours: Maximum 40% of unrestricted hours (800 hours max)</li>
+                    <li>✓ Supervision Contacts: Regular supervision meetings documented</li>
+                </ul>
+                
+                <h3 style="margin-top: 30px;">Useful Links:</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li><a href="https://www.bacb.com" target="_blank" style="color: var(--primary-color);">BACB Official Website</a></li>
+                    <li><a href="https://www.bacb.com/experience-standards/" target="_blank" style="color: var(--primary-color);">Experience Standards</a></li>
+                    <li><a href="https://www.bacb.com/forms/" target="_blank" style="color: var(--primary-color);">BACB Forms</a></li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Load data and populate forms
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+            populateForms();
+        });
+
+        function populateForms() {
+            const data = dataStore.entries;
+            
+            // Calculate totals
+            let totalUnrestricted = 0;
+            let totalRestricted = 0;
+            let totalSupervision = 0;
+            let totalHours = 0;
+            
+            data.forEach(entry => {
+                totalUnrestricted += entry.unrestricted || 0;
+                totalRestricted += entry.restricted || 0;
+                totalSupervision += entry.supervision || 0;
+                totalHours += entry.hours || 0;
+            });
+            
+            // Update requirement cards
+            document.getElementById('totalHoursText').textContent = totalHours.toFixed(1);
+            document.getElementById('totalProgress').style.width = ((totalHours / 2000) * 100) + '%';
+            document.getElementById('totalProgress').textContent = ((totalHours / 2000) * 100).toFixed(1) + '%';
+            
+            const supervisionPercent = totalHours > 0 ? (totalSupervision / totalHours * 100) : 0;
+            document.getElementById('supervisionPercent').textContent = supervisionPercent.toFixed(1) + '%';
+            document.getElementById('supervisionProgress').style.width = Math.min((supervisionPercent / 5) * 100, 100) + '%';
+            document.getElementById('supervisionProgress').textContent = supervisionPercent.toFixed(1) + '%';
+            
+            document.getElementById('currentMonthHours').textContent = totalHours.toFixed(1);
+            document.getElementById('unrestrictedHours').textContent = totalUnrestricted.toFixed(1);
+            document.getElementById('restrictedHours').textContent = totalRestricted.toFixed(1);
+            
+            // Check if monthly max exceeded
+            const monthlyMaxCard = document.getElementById('monthlyMaxCard');
+            if (totalHours > 130) {
+                monthlyMaxCard.classList.add('not-met');
+            } else if (totalHours > 120) {
+                monthlyMaxCard.classList.add('warning');
+            } else {
+                monthlyMaxCard.classList.add('met');
+            }
+            
+            // Check supervision percentage
+            const supervisionCard = document.getElementById('supervisionCard');
+            if (supervisionPercent >= 5) {
+                supervisionCard.classList.add('met');
+            } else if (supervisionPercent >= 4) {
+                supervisionCard.classList.add('warning');
+            } else {
+                supervisionCard.classList.add('not-met');
+            }
+            
+            // Populate monthly table
+            const tbody = document.getElementById('monthlyTableBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(entry => {
+                const date = new Date(entry.date);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</td>
+                    <td>${date.toLocaleDateString('en-US', {weekday: 'short'})}</td>
+                    <td style="font-size: 0.85em;">${entry.time || 'N/A'}</td>
+                    <td>${(entry.unrestricted || 0).toFixed(1)}</td>
+                    <td>${(entry.restricted || 0).toFixed(1)}</td>
+                    <td>${(entry.supervision || 0).toFixed(1)}</td>
+                    <td><strong>${entry.hours.toFixed(1)}</strong></td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update monthly totals
+            document.getElementById('monthlyUnrestricted').textContent = totalUnrestricted.toFixed(1);
+            document.getElementById('monthlyRestricted').textContent = totalRestricted.toFixed(1);
+            document.getElementById('monthlySupervision').textContent = totalSupervision.toFixed(1);
+            document.getElementById('monthlyTotal').textContent = totalHours.toFixed(1);
+            
+            document.getElementById('formSupervisionHours').textContent = totalSupervision.toFixed(1);
+            document.getElementById('formSupervisionPercent').textContent = supervisionPercent.toFixed(1) + '%';
+            document.getElementById('formMeetsRequirement').textContent = supervisionPercent >= 5 ? 'Yes ✓' : 'No ✗';
+            
+            // Update final form
+            document.getElementById('finalUnrestricted').textContent = totalUnrestricted.toFixed(1);
+            document.getElementById('finalRestricted').textContent = totalRestricted.toFixed(1);
+            document.getElementById('finalSupervision').textContent = totalSupervision.toFixed(1);
+            document.getElementById('finalTotal').textContent = totalHours.toFixed(1);
+            
+            document.getElementById('finalUnrestrictedPercent').textContent = ((totalUnrestricted / totalHours) * 100).toFixed(1) + '%';
+            document.getElementById('finalRestrictedPercent').textContent = ((totalRestricted / totalHours) * 100).toFixed(1) + '%';
+            document.getElementById('finalSupervisionPercent').textContent = ((totalSupervision / totalHours) * 100).toFixed(1) + '%';
+            
+            // Check requirements
+            document.getElementById('final2000Hours').textContent = totalHours >= 2000 ? '✓ Met' : `Pending (${(totalHours/2000*100).toFixed(1)}%)`;
+            document.getElementById('final5Percent').textContent = supervisionPercent >= 5 ? '✓ Met' : `Pending (${supervisionPercent.toFixed(1)}%)`;
+            document.getElementById('finalDurationReq').textContent = 'In Progress (1 month)';
+            
+            const restrictedLimit = Math.min(totalUnrestricted * 0.4, 800);
+            document.getElementById('finalRestrictedReq').textContent = totalRestricted <= restrictedLimit ? '✓ Met' : '✗ Exceeded';
+        }
+
+        function printForm(formId) {
+            const content = document.getElementById(formId).innerHTML;
+            const win = window.open('', '', 'height=700,width=900');
+            win.document.write('<html><head><title>BACB Form</title>');
+            win.document.write('<style>body{font-family:Arial,sans-serif;padding:40px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:10px;text-align:left;}th{background:#f0f0f0;}.form-field{display:flex;justify-content:space-between;border-bottom:1px dotted #666;padding:8px 0;}.signature-line{border-top:2px solid #000;padding-top:10px;margin-top:50px;}</style>');
+            win.document.write('</head><body>');
+            win.document.write(content);
+            win.document.write('</body></html>');
+            win.document.close();
+            win.print();
+        }
+
+        function downloadPDF(formId) {
+            alert('PDF download functionality will be implemented with a PDF library. For now, please use Print and "Save as PDF".');
+        }
+
+        function copyFormData() {
+            const data = dataStore.entries;
+            let text = 'BACB Fieldwork Hours - October 2024\n\n';
+            
+            data.forEach(entry => {
+                text += `${entry.date} | U:${entry.unrestricted} R:${entry.restricted} S:${entry.supervision} | Total:${entry.hours}\n`;
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Data copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
